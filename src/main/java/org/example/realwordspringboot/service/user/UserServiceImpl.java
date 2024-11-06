@@ -1,6 +1,7 @@
 package org.example.realwordspringboot.service.user;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.BadRequestException;
 import org.example.realwordspringboot.domain.user.User;
 import org.example.realwordspringboot.repository.UserRepository;
 import org.example.realwordspringboot.repository.entity.UserEntity;
@@ -27,6 +28,20 @@ public class UserServiceImpl implements UserService {
                 .password(saved.getPassword())
                 .email(saved.getEmail())
                 .image(saved.getImage())
+                .build();
+    }
+
+    @Override
+    public User login(String email, String password) throws BadRequestException {
+        var user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new BadRequestException(""));
+
+        return User.builder()
+                .bio(user.getBio())
+                .userName(user.getUserName())
+                .password(user.getPassword())
+                .email(user.getEmail())
+                .image(user.getImage())
                 .build();
     }
 }

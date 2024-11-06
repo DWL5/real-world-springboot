@@ -13,3 +13,5 @@ spring:
 logging:
   level:
     org.hibernate.type: trace
+jwt:
+  secret: n9r5/Yz+iJ9bVlTpH8RZ2l4BbP7T+yRk7U/n3s5W2/P6lA5L
