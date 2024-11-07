@@ -44,4 +44,17 @@ public class UserServiceImpl implements UserService {
                 .image(user.getImage())
                 .build();
     }
+
+    @Override
+    public User findUser(String userName) throws BadRequestException {
+        var user = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new BadRequestException(""));
+        return User.builder()
+                .bio(user.getBio())
+                .userName(user.getUserName())
+                .password(user.getPassword())
+                .email(user.getEmail())
+                .image(user.getImage())
+                .build();
+    }
 }
