@@ -6,6 +6,7 @@ import org.example.realwordspringboot.auth.JwtProvider;
 import org.example.realwordspringboot.auth.service.AuthService;
 import org.example.realwordspringboot.controller.dto.reqeust.LoginRequest;
 import org.example.realwordspringboot.controller.dto.reqeust.RegistrationRequest;
+import org.example.realwordspringboot.controller.dto.reqeust.UpdateUserRequest;
 import org.example.realwordspringboot.controller.dto.response.UserResponse;
 import org.example.realwordspringboot.domain.user.User;
 import org.example.realwordspringboot.service.user.UserService;
@@ -40,6 +41,16 @@ public class UserController {
     public UserResponse getUser(@RequestHeader("Authorization") String authorizationHeader) throws BadRequestException {
         var userName = authService.getUserNameFromToken(authorizationHeader);
         var user = userService.findUser(userName);
+        var token = authService.createToken(user.getUserName());
+        return new UserResponse(user.getEmail(), token, user.getUserName(), user.getBio(), user.getImage());
+    }
+
+    @PutMapping
+    public UserResponse updateUser(@RequestHeader("Authorization") String authorizationHeader, @RequestBody UpdateUserRequest request)
+            throws BadRequestException {
+        var userName = authService.getUserNameFromToken(authorizationHeader);
+        var updateRequestedUser = request.user();
+        var user = userService.updateUser(userName, updateRequestedUser.email(), updateRequestedUser.image(), updateRequestedUser.bio());
         var token = authService.createToken(user.getUserName());
         return new UserResponse(user.getEmail(), token, user.getUserName(), user.getBio(), user.getImage());
     }

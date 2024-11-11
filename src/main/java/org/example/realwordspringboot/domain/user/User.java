@@ -3,6 +3,8 @@ package org.example.realwordspringboot.domain.user;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.Objects;
+
 @Builder
 @Getter
 public class User {
@@ -18,5 +20,29 @@ public class User {
                 .userName(userName)
                 .password(password)
                 .build();
+    }
+
+    public void changeEmail(String email) {
+        if (Objects.isNull(email)) {
+            return;
+        }
+
+        this.email = email;
+    }
+
+    public void changeBio(String bio) {
+        if (Objects.isNull(bio)) {
+            return;
+        }
+
+        this.bio = bio;
+    }
+
+    public void changeImage(String image) {
+        if (Objects.isNull(email)) {
+            return;
+        }
+
+        this.image = image;
     }
 }
