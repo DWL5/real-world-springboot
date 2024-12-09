@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.naming.AuthenticationException;
 
-@RestController()
+@RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserController {
