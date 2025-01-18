@@ -3,6 +3,7 @@ package org.example.realwordspringboot.domain.user;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.List;
 import java.util.Objects;
 
 @Builder
@@ -13,6 +14,8 @@ public class User {
     private String password;
     private String bio;
     private String image;
+    private List<User> followings;
+    private List<User> followers;
 
     public static User register(String email, String userName, String password) {
         return User.builder()
@@ -44,5 +47,10 @@ public class User {
         }
 
         this.image = image;
+    }
+
+    public boolean isFollowing(String userName) {
+        return followings.stream()
+                .anyMatch(following -> following.getUserName().equals(userName));
     }
 }

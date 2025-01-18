@@ -23,7 +23,7 @@ public class FollowEntity {
     private UserEntity followerUser;
 
     @ManyToOne
-    @JoinColumn(name = "follwing_user_id")
+    @JoinColumn(name = "following_user_id")
     private UserEntity followingUser;
 
     private LocalDateTime followDate;

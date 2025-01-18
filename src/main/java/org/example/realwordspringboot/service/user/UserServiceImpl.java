@@ -3,6 +3,8 @@ package org.example.realwordspringboot.service.user;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
 import org.example.realwordspringboot.domain.user.User;
+import org.example.realwordspringboot.mapper.UserEntityMapper;
+import org.example.realwordspringboot.mapper.UserMapper;
 import org.example.realwordspringboot.repository.UserRepository;
 import org.example.realwordspringboot.repository.entity.UserEntity;
 import org.springframework.stereotype.Service;
@@ -13,22 +15,10 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     public User register(User user) {
-        var entity = UserEntity.builder()
-                .bio(user.getBio())
-                .userName(user.getUserName())
-                .password(user.getPassword())
-                .email(user.getEmail())
-                .image(user.getImage())
-                .build();
+        var entity = UserEntityMapper.from(user);
         UserEntity saved = userRepository.save(entity);
 
-        return User.builder()
-                .bio(saved.getBio())
-                .userName(saved.getUserName())
-                .password(saved.getPassword())
-                .email(saved.getEmail())
-                .image(saved.getImage())
-                .build();
+        return UserMapper.fromEntity(saved);
     }
 
     @Override
@@ -36,26 +26,14 @@ public class UserServiceImpl implements UserService {
         var userEntity = userRepository.findByEmail(email)
                 .orElseThrow(() -> new BadRequestException(""));
 
-        return User.builder()
-                .bio(userEntity.getBio())
-                .userName(userEntity.getUserName())
-                .password(userEntity.getPassword())
-                .email(userEntity.getEmail())
-                .image(userEntity.getImage())
-                .build();
+        return UserMapper.fromEntity(userEntity);
     }
 
     @Override
     public User findUser(String userName) throws BadRequestException {
         var userEntity = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new BadRequestException(""));
-        return User.builder()
-                .bio(userEntity.getBio())
-                .userName(userEntity.getUserName())
-                .password(userEntity.getPassword())
-                .email(userEntity.getEmail())
-                .image(userEntity.getImage())
-                .build();
+        return UserMapper.fromEntity(userEntity);
     }
 
     @Override
@@ -63,34 +41,14 @@ public class UserServiceImpl implements UserService {
         var userEntity = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new BadRequestException(""));
 
-        var user = User.builder()
-                .bio(userEntity.getBio())
-                .userName(userEntity.getUserName())
-                .password(userEntity.getPassword())
-                .email(userEntity.getEmail())
-                .image(userEntity.getImage())
-                .build();
-
+        var user = UserMapper.fromEntity(userEntity);
         user.changeEmail(email);
         user.changeBio(bio);
         user.changeImage(image);
 
-        var updated = UserEntity.builder()
-                .id(userEntity.getId())
-                .bio(user.getBio())
-                .userName(user.getUserName())
-                .password(user.getPassword())
-                .email(user.getEmail())
-                .image(user.getImage())
-                .build();
-
+        var updated = UserEntityMapper.from(user);
         UserEntity updatedEntity = userRepository.save(updated);
-        return User.builder()
-                .bio(updatedEntity.getBio())
-                .userName(updatedEntity.getUserName())
-                .password(updatedEntity.getPassword())
-                .email(updatedEntity.getEmail())
-                .image(updatedEntity.getImage())
-                .build();
+
+        return UserMapper.fromEntity(updatedEntity);
     }
 }
