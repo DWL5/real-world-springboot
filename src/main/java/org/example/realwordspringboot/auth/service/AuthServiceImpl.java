@@ -8,27 +8,27 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
-    private final static String NON_AUTH = "";
+    private final static Long NON_AUTH = 0L;
     private final JwtProvider jwtProvider;
 
-    public String createToken(String userName) {
-        return jwtProvider.createToken(userName);
+    public String createToken(Long userId) {
+        return jwtProvider.createToken(userId);
     }
 
-    public String getUserNameFromToken(String bearerToken) throws BadRequestException {
+    public Long getUserIdFromToken(String bearerToken) throws BadRequestException {
         String token = bearerToken.startsWith("Bearer ") ? bearerToken.substring(7) : bearerToken;
         if (jwtProvider.validateToken(token)) {
-            return jwtProvider.getUsername(token);
+            return jwtProvider.getUserId(token);
         }
 
         throw new BadRequestException("");
     }
 
     @Override
-    public String getUserNameFromTokenOptional(String bearerToken) {
+    public Long getUserIdFromTokenOptional(String bearerToken) {
         String token = bearerToken.startsWith("Bearer ") ? bearerToken.substring(7) : bearerToken;
         if (jwtProvider.validateToken(token)) {
-            return jwtProvider.getUsername(token);
+            return jwtProvider.getUserId(token);
         }
 
         return NON_AUTH;

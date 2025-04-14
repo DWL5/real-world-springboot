@@ -15,8 +15,8 @@ public class JwtProvider {
     private String secretKey;
     private long validityInMilliSeconds = 3600000;
 
-    public String createToken(String username) {
-        var claims = Jwts.claims().setSubject(username);
+    public String createToken(Long userId) {
+        var claims = Jwts.claims().setSubject(String.valueOf(userId));
         var now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliSeconds);
 
@@ -29,8 +29,8 @@ public class JwtProvider {
     }
 
 
-    public String getUsername(String token) {
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+    public Long getUserId(String token) {
+        return Long.parseLong(Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject());
     }
 
     public boolean validateToken(String token) {

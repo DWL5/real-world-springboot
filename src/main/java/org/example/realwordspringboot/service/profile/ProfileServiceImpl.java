@@ -10,24 +10,41 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class ProfileServiceImpl implements ProfileService {
-    private final static String NON_AUTH = "";
+    private final static Long NON_AUTH = 0L;
     private final UserRepository userRepository;
 
     @Override
-    public Profile getProfile(String authUserName, String profileUserName) throws BadRequestException {
+    public Profile getProfile(Long authUserId, String profileUserName) throws BadRequestException {
         var profileUserEntity = userRepository.findByUserName(profileUserName)
                 .orElseThrow(() -> new BadRequestException(""));
         var profileUser = UserMapper.fromEntity(profileUserEntity);
 
-        return Profile.of(profileUser, isFollowing(authUserName, profileUser.getUserName()));
+        return Profile.of(profileUser, isFollowing(authUserId, profileUser.getUserName()));
     }
 
-    private boolean isFollowing(String authUserName, String profileUserName) throws BadRequestException {
-        if (NON_AUTH.equals(authUserName)) {
+    @Override
+    public Profile follow(Long authUserId, String followeeName) throws BadRequestException {
+        var followerEntity = userRepository.findById(authUserId)
+                .orElseThrow(() -> new BadRequestException(""));
+
+        var follower = UserMapper.fromEntity(followerEntity);
+
+        var followeeEntity = userRepository.findByUserName(followeeName)
+                .orElseThrow(() -> new BadRequestException(""));
+
+        var followee = UserMapper.fromEntity(followeeEntity);
+
+        follower.follow(followee);
+
+        return null;
+    }
+
+    private boolean isFollowing(Long userId, String profileUserName) throws BadRequestException {
+        if (NON_AUTH.equals(userId)) {
             return false;
         }
 
-        var authUserEntity = userRepository.findByUserName(authUserName)
+        var authUserEntity = userRepository.findById(userId)
                 .orElseThrow(() -> new BadRequestException(""));
         var authUser = UserMapper.fromEntity(authUserEntity);
 

@@ -1,14 +1,17 @@
 package org.example.realwordspringboot.service.user;
 
 import org.apache.coyote.BadRequestException;
-import org.example.realwordspringboot.domain.user.User;
+import org.example.realwordspringboot.controller.dto.response.UserResponse;
+import org.example.realwordspringboot.domain.dto.LoginDto;
+import org.example.realwordspringboot.domain.dto.RegistrationDto;
+import org.example.realwordspringboot.domain.dto.UserUpdateDto;
 
 public interface UserService {
-    User register(User user);
+    UserResponse register(RegistrationDto registrationDto);
 
-    User login(String email, String password) throws BadRequestException;
+    UserResponse login(LoginDto loginDto) throws BadRequestException;
 
-    User findUser(String userName) throws BadRequestException;
+    UserResponse findUser(Long userId) throws BadRequestException;
 
-    User updateUser(String userName, String email, String image, String bio) throws BadRequestException;
+    UserResponse updateUser(UserUpdateDto command) throws BadRequestException;
 }

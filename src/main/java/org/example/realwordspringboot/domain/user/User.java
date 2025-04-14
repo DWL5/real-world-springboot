@@ -2,7 +2,9 @@ package org.example.realwordspringboot.domain.user;
 
 import lombok.Builder;
 import lombok.Getter;
+import org.example.realwordspringboot.repository.entity.UserEntity;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -52,5 +54,9 @@ public class User {
     public boolean isFollowing(String userName) {
         return followings.stream()
                 .anyMatch(following -> following.getUserName().equals(userName));
+    }
+
+    public void follow(User followee) {
+        followers.add(followee);
     }
 }

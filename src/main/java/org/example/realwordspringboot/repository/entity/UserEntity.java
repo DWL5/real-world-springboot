@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.List;
 @Table(name = "users")
 @Builder
 @Getter
+@Setter
 @AllArgsConstructor
 public class UserEntity {
 
@@ -32,10 +34,10 @@ public class UserEntity {
 
     private String image;
 
-    @OneToMany(mappedBy = "followerUser")
+    @OneToMany(mappedBy = "followerUser", fetch = FetchType.EAGER)
     private List<FollowEntity> followings = new ArrayList<>();
 
-    @OneToMany(mappedBy = "followingUser")
+    @OneToMany(mappedBy = "followingUser", fetch = FetchType.EAGER)
     private List<FollowEntity> followers = new ArrayList<>();
 
     public UserEntity() {
