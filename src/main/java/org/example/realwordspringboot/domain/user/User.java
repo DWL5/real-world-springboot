@@ -16,16 +16,8 @@ public class User {
     private String password;
     private String bio;
     private String image;
-    private List<User> followings;
-    private List<User> followers;
-
-    public static User register(String email, String userName, String password) {
-        return User.builder()
-                .email(email)
-                .userName(userName)
-                .password(password)
-                .build();
-    }
+    private List<String> followings;
+    private List<String> followers;
 
     public void changeEmail(String email) {
         if (Objects.isNull(email)) {
@@ -44,7 +36,7 @@ public class User {
     }
 
     public void changeImage(String image) {
-        if (Objects.isNull(email)) {
+        if (Objects.isNull(image)) {
             return;
         }
 
@@ -53,10 +45,35 @@ public class User {
 
     public boolean isFollowing(String userName) {
         return followings.stream()
-                .anyMatch(following -> following.getUserName().equals(userName));
+                .anyMatch(following -> following.equals(userName));
     }
 
-    public void follow(User followee) {
-        followers.add(followee);
+    public void follow(String following) {
+        if (followings.contains(following)) {
+            return;
+        }
+
+        followings.add(following);
+    }
+
+    public void unFollow(String following) {
+        if (!followings.contains(following)) {
+            return;
+        }
+
+        followings.remove(following);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(userName, user.userName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userName);
     }
 }

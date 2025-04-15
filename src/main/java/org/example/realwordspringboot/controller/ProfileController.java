@@ -18,13 +18,20 @@ public class ProfileController {
     public ProfileResponse getProfile(@RequestHeader("Authorization") String authorizationHeader, @PathVariable String userName) throws BadRequestException {
         var authUser = authService.getUserIdFromTokenOptional(authorizationHeader);
         var profile = profileService.getProfile(authUser, userName);
-        return new ProfileResponse(profile.getUserName(), profile.getBio(), profile.getBio(), profile.isFollowing());
+        return new ProfileResponse(profile.getUserName(), profile.getBio(), profile.getImage(), profile.isFollowing());
     }
 
     @PostMapping("{userName}/follow")
     public ProfileResponse follow(@RequestHeader("Authorization") String authorizationHeader, @PathVariable String userName) throws BadRequestException {
         var follower = authService.getUserIdFromTokenOptional(authorizationHeader);
-        profileService.follow(follower, userName);
-        return null;
+        var profile = profileService.follow(follower, userName);
+        return new ProfileResponse(profile.getUserName(), profile.getBio(), profile.getImage(), profile.isFollowing());
+    }
+
+    @DeleteMapping("{userName}/follow")
+    public ProfileResponse unFollow(@RequestHeader("Authorization") String authorizationHeader, @PathVariable String userName) throws BadRequestException {
+        var follower = authService.getUserIdFromTokenOptional(authorizationHeader);
+        var profile = profileService.unFollow(follower, userName);
+        return new ProfileResponse(profile.getUserName(), profile.getBio(), profile.getImage(), profile.isFollowing());
     }
 }

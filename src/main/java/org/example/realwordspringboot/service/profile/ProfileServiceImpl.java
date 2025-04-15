@@ -5,6 +5,7 @@ import org.apache.coyote.BadRequestException;
 import org.example.realwordspringboot.domain.profile.Profile;
 import org.example.realwordspringboot.mapper.UserMapper;
 import org.example.realwordspringboot.repository.UserRepository;
+import org.example.realwordspringboot.repository.dto.FollowCommand;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 public class ProfileServiceImpl implements ProfileService {
     private final static Long NON_AUTH = 0L;
     private final UserRepository userRepository;
+    private final ProfileCommandService profileCommandService;
 
     @Override
     public Profile getProfile(Long authUserId, String profileUserName) throws BadRequestException {
@@ -19,24 +21,43 @@ public class ProfileServiceImpl implements ProfileService {
                 .orElseThrow(() -> new BadRequestException(""));
         var profileUser = UserMapper.fromEntity(profileUserEntity);
 
-        return Profile.of(profileUser, isFollowing(authUserId, profileUser.getUserName()));
+        return Profile.of(profileUser, isFollowing(authUserId, profileUserName));
     }
 
     @Override
-    public Profile follow(Long authUserId, String followeeName) throws BadRequestException {
+    public Profile follow(Long authUserId, String followingName) throws BadRequestException {
         var followerEntity = userRepository.findById(authUserId)
                 .orElseThrow(() -> new BadRequestException(""));
 
         var follower = UserMapper.fromEntity(followerEntity);
 
-        var followeeEntity = userRepository.findByUserName(followeeName)
+        var followingEntity = userRepository.findByUserName(followingName)
                 .orElseThrow(() -> new BadRequestException(""));
 
-        var followee = UserMapper.fromEntity(followeeEntity);
+        var following = UserMapper.fromEntity(followingEntity);
 
-        follower.follow(followee);
+        follower.follow(followingName);
+        profileCommandService.follow(new FollowCommand(followerEntity, followingEntity));
 
-        return null;
+        return Profile.of(following, follower.isFollowing(followingName));
+    }
+
+    @Override
+    public Profile unFollow(Long authUserId, String followingName) throws BadRequestException {
+        var followerEntity = userRepository.findById(authUserId)
+                .orElseThrow(() -> new BadRequestException(""));
+
+        var follower = UserMapper.fromEntity(followerEntity);
+
+        var followingEntity = userRepository.findByUserName(followingName)
+                .orElseThrow(() -> new BadRequestException(""));
+
+        var following = UserMapper.fromEntity(followingEntity);
+
+        follower.unFollow(followingName);
+        profileCommandService.unFollow(new FollowCommand(followerEntity, followingEntity));
+
+        return Profile.of(following, follower.isFollowing(followingName));
     }
 
     private boolean isFollowing(Long userId, String profileUserName) throws BadRequestException {

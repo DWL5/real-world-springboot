@@ -1,6 +1,5 @@
 package org.example.realwordspringboot.mapper;
 
-import org.example.realwordspringboot.domain.dto.UserUpdateDto;
 import org.example.realwordspringboot.domain.user.User;
 import org.example.realwordspringboot.repository.dto.UserUpdateCommand;
 import org.example.realwordspringboot.repository.entity.UserEntity;
