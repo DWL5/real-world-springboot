@@ -1,8 +1,6 @@
 package org.example.realwordspringboot.mapper;
 
 import org.example.realwordspringboot.domain.dto.RegistrationDto;
-import org.example.realwordspringboot.domain.user.User;
-import org.example.realwordspringboot.repository.entity.FollowEntity;
 import org.example.realwordspringboot.repository.entity.UserEntity;
 
 import java.util.ArrayList;
