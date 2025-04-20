@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +14,7 @@ import java.util.List;
 @Table(name = "article")
 @Builder
 @Getter
+@Setter
 @AllArgsConstructor
 public class ArticleEntity {
     @Id
@@ -37,6 +40,12 @@ public class ArticleEntity {
     @ManyToOne
     @JoinColumn(name = "author_id", nullable = false)
     private UserEntity author;
+
+    @Column(nullable = false)
+    private LocalDateTime createdAt;
+
+    @Column(nullable = false)
+    private LocalDateTime updatedAt;
 
     public ArticleEntity() {
     }

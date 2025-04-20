@@ -2,9 +2,12 @@ package org.example.realwordspringboot.domain.article;
 
 import lombok.Builder;
 import lombok.Getter;
+import org.example.realwordspringboot.domain.dto.ArticleCreateDto;
+import org.example.realwordspringboot.domain.dto.ArticleUpdateDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Builder
 @Getter
@@ -19,4 +22,42 @@ public class Article {
     private boolean favorite;
     private int favoritesCount;
     private Author author;
+
+
+    public static Article from(ArticleCreateDto articleCreateDto, Author author) {
+        return Article.builder()
+                .slug(toSlug(articleCreateDto.title()))
+                .title(articleCreateDto.title())
+                .description(articleCreateDto.description())
+                .body(articleCreateDto.body())
+                .tagList(articleCreateDto.tagList())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .favorite(false)
+                .favoritesCount(0)
+                .author(author)
+                .build();
+    }
+
+    public void update(ArticleUpdateDto articleUpdateDto) {
+        if (Objects.nonNull(articleUpdateDto.title())) {
+            this.title = articleUpdateDto.title();
+            this.slug = toSlug(title);
+        }
+
+        if (Objects.nonNull(articleUpdateDto.description())) {
+            this.description = articleUpdateDto.description();
+        }
+
+        if (Objects.nonNull(articleUpdateDto.body())) {
+            this.body = articleUpdateDto.body();
+        }
+    }
+
+    private static String toSlug(String input) {
+        return input.trim()
+                .toLowerCase()
+                .replaceAll("[^\\p{IsAlphabetic}\\p{IsDigit}\\s]", "") // 특수문자 제거 (한글 포함)
+                .replaceAll("\\s+", "-"); // 공백 → 대시
+    }
 }

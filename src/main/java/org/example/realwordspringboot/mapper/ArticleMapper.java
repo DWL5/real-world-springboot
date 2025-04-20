@@ -4,8 +4,11 @@ import org.example.realwordspringboot.domain.article.Article;
 import org.example.realwordspringboot.domain.article.Author;
 import org.example.realwordspringboot.domain.dto.ArticleCreateDto;
 import org.example.realwordspringboot.domain.user.User;
+import org.example.realwordspringboot.repository.entity.ArticleEntity;
+import org.example.realwordspringboot.repository.entity.ArticleTagEntity;
+import org.example.realwordspringboot.repository.entity.UserEntity;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
 public class ArticleMapper {
     public static Article fromCreateDto(ArticleCreateDto articleCreateDto, User user) {
@@ -15,17 +18,36 @@ public class ArticleMapper {
                 .image(user.getImage())
                 .build();
 
+        return Article.from(articleCreateDto, author);
+    }
+
+    public static Article fromEntity(ArticleEntity entity) {
         return Article.builder()
-                .slug(toSlug(articleCreateDto.title()))
-                .title(articleCreateDto.title())
-                .description(articleCreateDto.description())
-                .body(articleCreateDto.body())
-                .tagList(articleCreateDto.tagList())
-                .favorite(false)
+                .slug(entity.getSlug())
+                .title(entity.getTitle())
+                .description(entity.getDescription())
+                .body(entity.getBody())
+                .tagList(toTagList(entity.getArticleTags()))
+                .favorite(false) //TODO : 구현필요
                 .favoritesCount(0)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .author(author)
+                .createdAt(entity.getCreatedAt())
+                .updatedAt(entity.getUpdatedAt())
+                .author(toUser(entity.getAuthor()))
+                .build();
+    }
+
+    private static List<String> toTagList(List<ArticleTagEntity> tagList) {
+        return tagList.stream()
+                .map(tagAndArticle -> tagAndArticle.getTag().getName())
+                .toList();
+    }
+
+    private static Author toUser(UserEntity user) {
+        return Author.builder()
+                .userName(user.getUserName())
+                .bio(user.getBio())
+                .image(user.getImage())
+                .following(false)
                 .build();
     }
 

@@ -20,4 +20,8 @@ public class ArticleTagEntity {
 
     @ManyToOne
     private TagEntity tag;
+
+    public ArticleTagEntity() {
+
+    }
 }

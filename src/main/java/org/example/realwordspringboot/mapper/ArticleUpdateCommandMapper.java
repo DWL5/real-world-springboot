@@ -2,22 +2,23 @@ package org.example.realwordspringboot.mapper;
 
 import org.example.realwordspringboot.domain.article.Article;
 import org.example.realwordspringboot.repository.dto.ArticleCreateCommand;
+import org.example.realwordspringboot.repository.dto.ArticleUpdateCommand;
+import org.example.realwordspringboot.repository.entity.ArticleEntity;
 import org.example.realwordspringboot.repository.entity.UserEntity;
 
 import java.time.LocalDateTime;
 
-public class ArticleCreateCommandMapper {
-    public static ArticleCreateCommand from(Article article, UserEntity userEntity) {
+public class ArticleUpdateCommandMapper {
 
-        return ArticleCreateCommand.builder()
+    public static ArticleUpdateCommand from(Article article, ArticleEntity articleEntity) {
+
+        return ArticleUpdateCommand.builder()
                 .title(article.getTitle())
                 .slug(article.getSlug())
                 .body(article.getBody())
                 .description(article.getDescription())
-                .tagList(article.getTagList())
-                .authorEntity(userEntity)
-                .createdAt(LocalDateTime.now())
                 .updateAt(LocalDateTime.now())
+                .articleEntity(articleEntity)
                 .build();
     }
 }
