@@ -6,6 +6,7 @@ import org.example.realwordspringboot.auth.service.AuthService;
 import org.example.realwordspringboot.controller.dto.reqeust.ArticleCreateRequest;
 import org.example.realwordspringboot.controller.dto.reqeust.ArticleUpdateRequest;
 import org.example.realwordspringboot.controller.dto.response.ArticleResponse;
+import org.example.realwordspringboot.domain.dto.ArticleDeleteDto;
 import org.example.realwordspringboot.domain.dto.ArticleUpdateDto;
 import org.example.realwordspringboot.mapper.ArticleCreateDtoMapper;
 import org.example.realwordspringboot.mapper.ArticleResponseMapper;
@@ -34,5 +35,11 @@ public class ArticleController {
         Long authorId = authService.getUserIdFromToken(authorizationHeader);
         var article = articleService.update(ArticleUpdateDtoMapper.of(request, authorId, slug));
         return ArticleResponseMapper.from(article);
+    }
+
+    @DeleteMapping("/{slug}")
+    public void delete(@RequestHeader("Authorization") String authorizationHeader, @PathVariable String slug) throws BadRequestException {
+        Long authorId = authService.getUserIdFromToken(authorizationHeader);
+        articleService.delete(new ArticleDeleteDto(slug, authorId));
     }
 }
