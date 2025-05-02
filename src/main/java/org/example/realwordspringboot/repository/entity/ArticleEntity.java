@@ -37,6 +37,9 @@ public class ArticleEntity {
     @OneToMany(mappedBy = "article", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<ArticleTagEntity> articleTags = new ArrayList<>();
 
+    @OneToMany(mappedBy = "article", orphanRemoval = true)
+    private List<CommentEntity> comments = new ArrayList<>();
+
     @ManyToOne
     @JoinColumn(name = "author_id", nullable = false)
     private UserEntity author;
