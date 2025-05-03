@@ -17,6 +17,7 @@ public class Article {
     private String description;
     private String body;
     private List<String> tagList;
+    private List<Comment> comments;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private boolean favorite;
@@ -52,6 +53,10 @@ public class Article {
         if (Objects.nonNull(articleUpdateDto.body())) {
             this.body = articleUpdateDto.body();
         }
+    }
+
+    public void deleteComment(Comment comment) {
+        comments.remove(comment);
     }
 
     private static String toSlug(String input) {

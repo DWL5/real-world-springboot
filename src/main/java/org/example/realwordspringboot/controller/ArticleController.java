@@ -11,6 +11,7 @@ import org.example.realwordspringboot.controller.dto.response.CommentMultipleRes
 import org.example.realwordspringboot.controller.dto.response.CommentSingleResponse;
 import org.example.realwordspringboot.domain.dto.ArticleDeleteDto;
 import org.example.realwordspringboot.domain.dto.CommentCreateDto;
+import org.example.realwordspringboot.domain.dto.CommentDeleteDto;
 import org.example.realwordspringboot.mapper.*;
 import org.example.realwordspringboot.service.article.ArticleService;
 import org.springframework.web.bind.annotation.*;
@@ -52,10 +53,17 @@ public class ArticleController {
         return CommentResponseMapper.from(comment);
     }
 
-    @GetMapping("/{slug}/commntes")
+    @GetMapping("/{slug}/comments")
     public CommentMultipleResponse getComments(@RequestHeader("Authorization") String authorizationHeader, @PathVariable String slug) throws BadRequestException {
         var userId = authService.getUserIdFromTokenOptional(authorizationHeader);
         var comments = articleService.getComments(userId, slug);
         return CommentResponseMapper.from(comments);
+    }
+
+    @DeleteMapping("{slug}/comments/{id}")
+    public void deleteComments(@RequestHeader("Authorization") String authorizationHeader, @PathVariable String slug, @PathVariable Long id) throws BadRequestException {
+        var authorId = authService.getUserIdFromToken(authorizationHeader);
+        articleService.deleteComments(new CommentDeleteDto(authorId, id, slug));
+
     }
 }

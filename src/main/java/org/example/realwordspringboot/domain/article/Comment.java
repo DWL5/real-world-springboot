@@ -5,6 +5,7 @@ import lombok.Getter;
 import org.example.realwordspringboot.domain.dto.CommentCreateDto;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Builder
 @Getter
@@ -23,5 +24,18 @@ public class Comment {
                 .body(commentCreateDto.body())
                 .author(author)
                 .build();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Comment comment = (Comment) o;
+        return Objects.equals(id, comment.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

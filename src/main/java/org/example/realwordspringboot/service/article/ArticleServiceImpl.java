@@ -4,14 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
 import org.example.realwordspringboot.domain.article.Article;
 import org.example.realwordspringboot.domain.article.Comment;
-import org.example.realwordspringboot.domain.dto.ArticleCreateDto;
-import org.example.realwordspringboot.domain.dto.ArticleDeleteDto;
-import org.example.realwordspringboot.domain.dto.ArticleUpdateDto;
-import org.example.realwordspringboot.domain.dto.CommentCreateDto;
+import org.example.realwordspringboot.domain.dto.*;
 import org.example.realwordspringboot.mapper.*;
 import org.example.realwordspringboot.repository.ArticleRepository;
+import org.example.realwordspringboot.repository.CommentRepository;
 import org.example.realwordspringboot.repository.UserRepository;
 import org.example.realwordspringboot.repository.dto.CommentCreateCommand;
+import org.example.realwordspringboot.repository.dto.CommentDeleteCommand;
 import org.example.realwordspringboot.repository.entity.UserEntity;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +23,7 @@ public class ArticleServiceImpl implements ArticleService {
     private final ArticleRepository articleRepository;
     private final ArticleCommandService articleCommandService;
     private final CommentCommandService commentCommandService;
+    private final CommentRepository commentRepository;
 
 
     @Override
@@ -77,6 +77,20 @@ public class ArticleServiceImpl implements ArticleService {
     public List<Comment> getComments(Long userId, String slug) throws BadRequestException {
         var comments = articleRepository.findBySlug(slug).getComments();
         return CommentMapper.toArray(comments);
+    }
+
+    @Override
+    public void deleteComments(CommentDeleteDto commentDeleteDto) throws BadRequestException {
+        var commentEntity = commentRepository.findById(commentDeleteDto.commentId())
+                .orElseThrow(() -> new BadRequestException(""));
+        var articleEntity = articleRepository.findBySlug(commentDeleteDto.slug());
+
+        var article = ArticleMapper.fromEntity(articleEntity);
+        var comment = CommentMapper.fromEntity(commentEntity);
+        article.deleteComment(comment);
+
+        var command = new CommentDeleteCommand(articleEntity, commentEntity);
+        commentCommandService.delete(command);
     }
 
     private void validateAuthor(Long authorId, UserEntity author) throws BadRequestException {
