@@ -6,6 +6,8 @@ import org.example.realwordspringboot.domain.dto.CommentCreateDto;
 import org.example.realwordspringboot.domain.user.User;
 import org.example.realwordspringboot.repository.entity.CommentEntity;
 
+import java.util.List;
+
 public class CommentMapper {
 
     public static Comment fromCreateDto(CommentCreateDto commentCreateDto, User user) {
@@ -16,6 +18,12 @@ public class CommentMapper {
                 .build();
 
         return Comment.create(commentCreateDto, author);
+    }
+
+    public static List<Comment> toArray(List<CommentEntity> entities) {
+        return entities.stream()
+                .map(CommentMapper::fromEntity)
+                .toList();
     }
 
     public static Comment fromEntity(CommentEntity entity) {

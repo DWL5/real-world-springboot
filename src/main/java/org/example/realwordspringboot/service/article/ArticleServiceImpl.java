@@ -10,11 +10,12 @@ import org.example.realwordspringboot.domain.dto.ArticleUpdateDto;
 import org.example.realwordspringboot.domain.dto.CommentCreateDto;
 import org.example.realwordspringboot.mapper.*;
 import org.example.realwordspringboot.repository.ArticleRepository;
-import org.example.realwordspringboot.repository.CommentRepository;
 import org.example.realwordspringboot.repository.UserRepository;
 import org.example.realwordspringboot.repository.dto.CommentCreateCommand;
 import org.example.realwordspringboot.repository.entity.UserEntity;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -60,7 +61,7 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public Comment comment(CommentCreateDto commentCreateDto) throws BadRequestException {
+    public Comment createComment(CommentCreateDto commentCreateDto) throws BadRequestException {
         var authorEntity = userRepository.findById(commentCreateDto.authorId())
                 .orElseThrow(() -> new BadRequestException(""));
         var author = UserMapper.fromEntity(authorEntity);
@@ -70,6 +71,12 @@ public class ArticleServiceImpl implements ArticleService {
         var command = new CommentCreateCommand(comment, articleEntity, authorEntity);
         var commentEntity = commentCommandService.save(command);
         return CommentMapper.fromEntity(commentEntity);
+    }
+
+    @Override
+    public List<Comment> getComments(Long userId, String slug) throws BadRequestException {
+        var comments = articleRepository.findBySlug(slug).getComments();
+        return CommentMapper.toArray(comments);
     }
 
     private void validateAuthor(Long authorId, UserEntity author) throws BadRequestException {
