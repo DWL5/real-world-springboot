@@ -5,12 +5,10 @@ import org.example.realwordspringboot.domain.article.Author;
 import org.example.realwordspringboot.domain.article.Comment;
 import org.example.realwordspringboot.domain.dto.ArticleCreateDto;
 import org.example.realwordspringboot.domain.user.User;
-import org.example.realwordspringboot.repository.entity.ArticleEntity;
-import org.example.realwordspringboot.repository.entity.ArticleTagEntity;
-import org.example.realwordspringboot.repository.entity.CommentEntity;
-import org.example.realwordspringboot.repository.entity.UserEntity;
+import org.example.realwordspringboot.repository.entity.*;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ArticleMapper {
@@ -24,6 +22,12 @@ public class ArticleMapper {
         return Article.from(articleCreateDto, author);
     }
 
+    public static Set<Article> toSet(List<ArticleEntity> entities) {
+        return entities.stream()
+                .map(ArticleMapper::fromEntity)
+                .collect(Collectors.toSet());
+    }
+
     public static Article fromEntity(ArticleEntity entity) {
         return Article.builder()
                 .slug(entity.getSlug())
@@ -32,11 +36,10 @@ public class ArticleMapper {
                 .body(entity.getBody())
                 .tagList(toTagList(entity.getArticleTags()))
                 .comments(toComments(entity.getComments()))
-                .favorite(false) //TODO : 구현필요
-                .favoritesCount(0)
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())
                 .author(toUser(entity.getAuthor()))
+                .favoriters(toFavoriter(entity.getFavorites()))
                 .build();
     }
 
@@ -58,6 +61,12 @@ public class ArticleMapper {
     private static List<Comment> toComments(List<CommentEntity> commentEntities) {
         return commentEntities.stream()
                 .map(CommentMapper::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    private static List<String> toFavoriter(List<FavoriteEntity> favoriteEntities) {
+        return favoriteEntities.stream()
+                .map(favoriteEntity -> favoriteEntity.getUser().getUserName())
                 .collect(Collectors.toList());
     }
 }

@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 public class ArticleUpdateCommandMapper {
 
-    public static ArticleUpdateCommand from(Article article, ArticleEntity articleEntity) {
+    public static ArticleUpdateCommand from(Article article) {
 
         return ArticleUpdateCommand.builder()
                 .title(article.getTitle())
@@ -18,7 +18,6 @@ public class ArticleUpdateCommandMapper {
                 .body(article.getBody())
                 .description(article.getDescription())
                 .updateAt(LocalDateTime.now())
-                .articleEntity(articleEntity)
                 .build();
     }
 }

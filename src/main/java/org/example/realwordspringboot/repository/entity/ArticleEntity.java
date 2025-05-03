@@ -44,6 +44,9 @@ public class ArticleEntity {
     @JoinColumn(name = "author_id", nullable = false)
     private UserEntity author;
 
+    @OneToMany(mappedBy = "article", orphanRemoval = true)
+    private List<FavoriteEntity> favorites = new ArrayList<>();
+
     @Column(nullable = false)
     private LocalDateTime createdAt;
 

@@ -12,6 +12,6 @@ public record ArticleUpdateCommand(
         String body,
         String description,
         LocalDateTime updateAt,
-        ArticleEntity articleEntity
+        Long articleId
 ) {
 }

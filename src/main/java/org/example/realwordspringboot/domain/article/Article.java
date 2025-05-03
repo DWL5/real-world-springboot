@@ -6,6 +6,7 @@ import org.example.realwordspringboot.domain.dto.ArticleCreateDto;
 import org.example.realwordspringboot.domain.dto.ArticleUpdateDto;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -20,10 +21,8 @@ public class Article {
     private List<Comment> comments;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private boolean favorite;
-    private int favoritesCount;
     private Author author;
-
+    private List<String> favoriters;
 
     public static Article from(ArticleCreateDto articleCreateDto, Author author) {
         return Article.builder()
@@ -34,8 +33,7 @@ public class Article {
                 .tagList(articleCreateDto.tagList())
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
-                .favorite(false)
-                .favoritesCount(0)
+                .favoriters(new ArrayList<>())
                 .author(author)
                 .build();
     }
@@ -59,10 +57,27 @@ public class Article {
         comments.remove(comment);
     }
 
+    public void favorite(String name) {
+        favoriters.add(name);
+    }
+
     private static String toSlug(String input) {
         return input.trim()
                 .toLowerCase()
                 .replaceAll("[^\\p{IsAlphabetic}\\p{IsDigit}\\s]", "") // 특수문자 제거 (한글 포함)
                 .replaceAll("\\s+", "-"); // 공백 → 대시
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Article article = (Article) o;
+        return Objects.equals(slug, article.slug);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(slug);
     }
 }

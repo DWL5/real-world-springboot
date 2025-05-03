@@ -6,12 +6,9 @@ import org.example.realwordspringboot.domain.article.Article;
 import org.example.realwordspringboot.domain.article.Comment;
 import org.example.realwordspringboot.domain.dto.*;
 import org.example.realwordspringboot.mapper.*;
-import org.example.realwordspringboot.repository.ArticleRepository;
-import org.example.realwordspringboot.repository.CommentRepository;
 import org.example.realwordspringboot.repository.UserRepository;
 import org.example.realwordspringboot.repository.dto.CommentCreateCommand;
 import org.example.realwordspringboot.repository.dto.CommentDeleteCommand;
-import org.example.realwordspringboot.repository.entity.UserEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,15 +17,20 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ArticleServiceImpl implements ArticleService {
     private final UserRepository userRepository;
-    private final ArticleRepository articleRepository;
+
+    private final ArticleQueryService articleQueryService;
     private final ArticleCommandService articleCommandService;
+
     private final CommentCommandService commentCommandService;
-    private final CommentRepository commentRepository;
+    private final CommentQueryService commentQueryService;
+
+    private final FavoriteQueryService favoriteQueryService;
+    private final FavoriteCommandService favoriteCommandService;
 
 
     @Override
     public Article create(ArticleCreateDto articleCreateDto) throws BadRequestException {
-        var authorEntity = userRepository.findById(articleCreateDto.authorId())
+        var authorEntity = userRepository.findByUserName(articleCreateDto.authorName())
                 .orElseThrow(() -> new BadRequestException(""));
 
         var author = UserMapper.fromEntity(authorEntity);
@@ -40,13 +42,10 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public Article update(ArticleUpdateDto articleUpdateDto) throws BadRequestException {
-        var articleEntity = articleRepository.findBySlug(articleUpdateDto.slug());
-        validateAuthor(articleUpdateDto.authorId(), articleEntity.getAuthor());
-
-        var article = ArticleMapper.fromEntity(articleEntity);
+        var article = articleQueryService.getAuthorArticleBySlug(articleUpdateDto.slug(), articleUpdateDto.authorName());
         article.update(articleUpdateDto);
 
-        var command = ArticleUpdateCommandMapper.from(article, articleEntity);
+        var command = ArticleUpdateCommandMapper.from(article);
         articleCommandService.update(command);
 
         return article;
@@ -54,48 +53,50 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public void delete(ArticleDeleteDto articleDeleteDto) throws BadRequestException {
-        var articleEntity = articleRepository.findBySlug(articleDeleteDto.slug());
-        validateAuthor(articleDeleteDto.authorId(), articleEntity.getAuthor());
-
-        articleRepository.delete(articleEntity);
+        var article = articleQueryService.getAuthorArticleBySlug(articleDeleteDto.slug(), articleDeleteDto.authorName());
+        articleCommandService.delete(article.getSlug());
     }
 
     @Override
     public Comment createComment(CommentCreateDto commentCreateDto) throws BadRequestException {
-        var authorEntity = userRepository.findById(commentCreateDto.authorId())
+        var authorEntity = userRepository.findByUserName(commentCreateDto.authorName())
                 .orElseThrow(() -> new BadRequestException(""));
         var author = UserMapper.fromEntity(authorEntity);
-        var articleEntity = articleRepository.findBySlug(commentCreateDto.slug());
         var comment = CommentMapper.fromCreateDto(commentCreateDto, author);
 
-        var command = new CommentCreateCommand(comment, articleEntity, authorEntity);
+        var command = new CommentCreateCommand(comment, commentCreateDto.slug(), authorEntity);
         var commentEntity = commentCommandService.save(command);
         return CommentMapper.fromEntity(commentEntity);
     }
 
     @Override
-    public List<Comment> getComments(Long userId, String slug) throws BadRequestException {
-        var comments = articleRepository.findBySlug(slug).getComments();
-        return CommentMapper.toArray(comments);
+    public List<Comment> getComments(String slug) {
+        return articleQueryService.getArticleBySlug(slug).getComments();
     }
 
     @Override
     public void deleteComments(CommentDeleteDto commentDeleteDto) throws BadRequestException {
-        var commentEntity = commentRepository.findById(commentDeleteDto.commentId())
-                .orElseThrow(() -> new BadRequestException(""));
-        var articleEntity = articleRepository.findBySlug(commentDeleteDto.slug());
 
-        var article = ArticleMapper.fromEntity(articleEntity);
-        var comment = CommentMapper.fromEntity(commentEntity);
+        var article = articleQueryService.getArticleBySlug(commentDeleteDto.slug());
+        var comment = commentQueryService.getAuthorCommentById(commentDeleteDto.commentId(), commentDeleteDto.authorName());
         article.deleteComment(comment);
 
-        var command = new CommentDeleteCommand(articleEntity, commentEntity);
+        var command = new CommentDeleteCommand(article, comment);
         commentCommandService.delete(command);
     }
 
-    private void validateAuthor(Long authorId, UserEntity author) throws BadRequestException {
-        if (!authorId.equals(author.getId())) {
-            throw new BadRequestException(" ");
+    @Override
+    public Article favoriteArticle(String userName, String slug) throws BadRequestException {
+        var favorites = favoriteQueryService.getFavorite(userName);
+        var article = articleQueryService.getArticleBySlug(slug);
+
+        var added = favorites.addArticle(article);
+        if (added) {
+            article.favorite(favorites.getUser().getUserName());
+            favoriteCommandService.save(userName, slug);
+            return article;
         }
+
+        throw new BadRequestException("");
     }
 }

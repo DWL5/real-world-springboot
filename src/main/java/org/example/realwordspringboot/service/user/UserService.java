@@ -11,7 +11,7 @@ public interface UserService {
 
     UserResponse login(LoginDto loginDto) throws BadRequestException;
 
-    UserResponse findUser(Long userId) throws BadRequestException;
+    UserResponse findUser(String userName) throws BadRequestException;
 
     UserResponse updateUser(UserUpdateDto command) throws BadRequestException;
 }

@@ -4,7 +4,7 @@ import org.example.realwordspringboot.controller.dto.response.ArticleSingleRespo
 import org.example.realwordspringboot.domain.article.Article;
 
 public class ArticleResponseMapper {
-    public static ArticleSingleResponse from(Article article) {
+    public static ArticleSingleResponse from(Article article, String viewer) {
         var author = article.getAuthor();
         var authorResponse = ArticleSingleResponse.AuthorResponse.builder()
                 .userName(author.getUserName())
@@ -13,6 +13,7 @@ public class ArticleResponseMapper {
                 .following(author.isFollowing())
                 .build();
 
+        var favorited = article.getFavoriters().contains(viewer);
         var articleResponse = ArticleSingleResponse.ArticleResponse.builder()
                 .slug(article.getSlug())
                 .title(article.getTitle())
@@ -21,8 +22,8 @@ public class ArticleResponseMapper {
                 .tagList(article.getTagList())
                 .createdAt(article.getCreatedAt())
                 .updatedAt(article.getUpdatedAt())
-                .favorited(article.isFavorite())
-                .favoritesCount(article.getFavoritesCount())
+                .favoritesCount(article.getFavoriters().size())
+                .favorited(favorited)
                 .author(authorResponse)
                 .build();
 

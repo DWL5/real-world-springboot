@@ -10,6 +10,6 @@ public record ArticleUpdateDto(
         String title,
         String description,
         String body,
-        Long authorId
+        String authorName
 ) {
 }

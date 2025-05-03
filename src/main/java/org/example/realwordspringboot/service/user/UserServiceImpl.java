@@ -25,7 +25,7 @@ public class UserServiceImpl implements UserService {
         var entity = UserEntityMapper.from(dto);
         var saved = userRepository.save(entity);
         var user = UserMapper.fromEntity(saved);
-        var token = authService.createToken(saved.getId());
+        var token = authService.createToken(saved.getUserName());
 
         return UserResponseMapper.toUserResponse(token, user);
     }
@@ -36,23 +36,23 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new BadRequestException(""));
 
         var user = UserMapper.fromEntity(userEntity);
-        var token = authService.createToken(userEntity.getId());
+        var token = authService.createToken(userEntity.getUserName());
         return UserResponseMapper.toUserResponse(token, user);
     }
 
     @Override
-    public UserResponse findUser(Long userId) throws BadRequestException {
-        var userEntity = userRepository.findById(userId)
+    public UserResponse findUser(String userName) throws BadRequestException {
+        var userEntity = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new BadRequestException(""));
 
         var user = UserMapper.fromEntity(userEntity);
-        var token = authService.createToken(userEntity.getId());
+        var token = authService.createToken(userEntity.getUserName());
         return UserResponseMapper.toUserResponse(token, user);
     }
 
     @Override
     public UserResponse updateUser(UserUpdateDto dto) throws BadRequestException {
-        var userEntity = userRepository.findById(dto.id())
+        var userEntity = userRepository.findByUserName(dto.userName())
                 .orElseThrow(() -> new BadRequestException(""));
 
         var user = UserMapper.fromEntity(userEntity);
@@ -61,7 +61,7 @@ public class UserServiceImpl implements UserService {
         user.changeImage(dto.image());
 
         var updated = userCommandService.update(UserUpdateCommandMapper.of(user, userEntity));
-        var token = authService.createToken(updated.getId());
+        var token = authService.createToken(updated.getUserName());
         return UserResponseMapper.toUserResponse(token, user);
     }
 }

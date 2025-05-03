@@ -10,6 +10,6 @@ public record ArticleCreateDto(
         String description,
         String body,
         List<String> tagList,
-        Long authorId
+        String authorName
 ) {
 }

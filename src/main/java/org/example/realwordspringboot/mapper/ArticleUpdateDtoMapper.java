@@ -5,13 +5,13 @@ import org.example.realwordspringboot.domain.dto.ArticleUpdateDto;
 
 public class ArticleUpdateDtoMapper {
 
-    public static ArticleUpdateDto of(ArticleUpdateRequest request, Long authorId, String slug) {
+    public static ArticleUpdateDto of(ArticleUpdateRequest request, String authorName, String slug) {
         return ArticleUpdateDto.builder()
                 .slug(slug)
                 .title(request.article().title())
                 .description(request.article().description())
                 .body(request.article().body())
-                .authorId(authorId)
+                .authorName(authorName)
                 .build();
     }
 }

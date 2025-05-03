@@ -4,7 +4,7 @@ import org.apache.coyote.BadRequestException;
 
 public interface AuthService {
 
-    String createToken(Long userId);
-    Long getUserIdFromToken(String token) throws BadRequestException;
-    Long getUserIdFromTokenOptional(String token);
+    String createToken(String userName);
+    String getUserNameFromToken(String token) throws BadRequestException;
+    String getUserNameFromTokenOptional(String token);
 }

@@ -5,6 +5,6 @@ import lombok.Builder;
 @Builder
 public record ArticleDeleteDto(
         String slug,
-        Long authorId
+        String authorName
 ) {
 }

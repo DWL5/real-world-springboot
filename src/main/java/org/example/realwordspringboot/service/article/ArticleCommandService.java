@@ -2,6 +2,7 @@ package org.example.realwordspringboot.service.article;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.BadRequestException;
 import org.example.realwordspringboot.repository.ArticleRepository;
 import org.example.realwordspringboot.repository.TagRepository;
 import org.example.realwordspringboot.repository.dto.ArticleCreateCommand;
@@ -38,12 +39,16 @@ public class ArticleCommandService {
     }
 
     public void update(ArticleUpdateCommand command) {
-        var entity = command.articleEntity();
+        var entity = articleRepository.findBySlug(command.slug());
         entity.setTitle(command.title());
         entity.setSlug(command.slug());
         entity.setBody(command.body());
         entity.setDescription(command.description());
         entity.setUpdatedAt(command.updateAt());
+    }
+
+    public void delete(String slug) {
+        articleRepository.deleteBySlug(slug);
     }
 
     private List<ArticleTagEntity> buildTagEntities(ArticleEntity article, List<String> tagList) {

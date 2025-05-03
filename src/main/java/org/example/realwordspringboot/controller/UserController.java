@@ -30,16 +30,16 @@ public class UserController {
 
     @GetMapping
     public UserResponse getUser(@RequestHeader("Authorization") String authorizationHeader) throws BadRequestException {
-        var userId = authService.getUserIdFromToken(authorizationHeader);
-        return userService.findUser(userId);
+        var userName = authService.getUserNameFromToken(authorizationHeader);
+        return userService.findUser(userName);
     }
 
     @PutMapping
     public UserResponse updateUser(@RequestHeader("Authorization") String authorizationHeader, @RequestBody UpdateUserRequest request)
             throws BadRequestException {
-        var userId = authService.getUserIdFromToken(authorizationHeader);
+        var userName = authService.getUserNameFromToken(authorizationHeader);
         var updateRequestedUser = request.user();
-        var command = UserUpdateDtoMapper.of(updateRequestedUser, userId);
+        var command = UserUpdateDtoMapper.of(updateRequestedUser, userName);
         return userService.updateUser(command);
     }
 }

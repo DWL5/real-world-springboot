@@ -1,10 +1,10 @@
 package org.example.realwordspringboot.repository.dto;
 
-import org.example.realwordspringboot.repository.entity.ArticleEntity;
-import org.example.realwordspringboot.repository.entity.CommentEntity;
+import org.example.realwordspringboot.domain.article.Article;
+import org.example.realwordspringboot.domain.article.Comment;
 
 public record CommentDeleteCommand(
-        ArticleEntity articleEntity,
-        CommentEntity commentEntity
+        Article article,
+        Comment comment
 ) {
 }
