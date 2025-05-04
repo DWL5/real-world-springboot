@@ -49,7 +49,8 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public Article update(ArticleUpdateDto articleUpdateDto) throws BadRequestException {
-        var article = articleQueryService.getAuthorArticleBySlug(articleUpdateDto.slug(), articleUpdateDto.authorName());
+        var article = articleQueryService.getAuthorArticleBySlug(articleUpdateDto.slug(),
+                articleUpdateDto.authorName(), articleUpdateDto.authorName());
         article.update(articleUpdateDto);
 
         var command = ArticleUpdateCommandMapper.from(article);
@@ -60,7 +61,8 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public void delete(ArticleDeleteDto articleDeleteDto) throws BadRequestException {
-        var article = articleQueryService.getAuthorArticleBySlug(articleDeleteDto.slug(), articleDeleteDto.authorName());
+        var article = articleQueryService.getAuthorArticleBySlug(articleDeleteDto.slug(),
+                articleDeleteDto.authorName(), articleDeleteDto.authorName());
         articleCommandService.delete(article.getSlug());
     }
 
@@ -78,13 +80,13 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public List<Comment> getComments(String slug) {
-        return articleQueryService.getArticleBySlug(slug).getComments();
+        return commentQueryService.getComments(slug);
     }
 
     @Override
     public void deleteComments(CommentDeleteDto commentDeleteDto) throws BadRequestException {
 
-        var article = articleQueryService.getArticleBySlug(commentDeleteDto.slug());
+        var article = articleQueryService.getArticleBySlug(commentDeleteDto.slug(), commentDeleteDto.viewerName());
         var comment = commentQueryService.getAuthorCommentById(commentDeleteDto.commentId(), commentDeleteDto.authorName());
         article.deleteComment(comment);
 
@@ -95,7 +97,7 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public Article favoriteArticle(String userName, String slug) throws BadRequestException {
         var favorites = favoriteQueryService.getFavorite(userName);
-        var article = articleQueryService.getArticleBySlug(slug);
+        var article = articleQueryService.getArticleBySlug(slug, userName);
 
         var added = favorites.addArticle(article);
         if (added) {
@@ -110,7 +112,7 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public Article unFavoriteArticle(String userName, String slug) throws BadRequestException {
         var favorites = favoriteQueryService.getFavorite(userName);
-        var article = articleQueryService.getArticleBySlug(slug);
+        var article = articleQueryService.getArticleBySlug(slug, userName);
 
         var removed = favorites.removeArticle(article);
         if (removed) {

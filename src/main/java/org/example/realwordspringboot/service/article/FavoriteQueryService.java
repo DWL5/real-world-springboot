@@ -26,7 +26,7 @@ public class FavoriteQueryService {
                 .map(FavoriteEntity::getArticle)
                 .toList();
 
-        var articles = ArticleMapper.toSet(articleEntity);
+        var articles = ArticleMapper.toSet(articleEntity, userName);
         return Favorite.builder()
                 .user(user)
                 .articles(articles)

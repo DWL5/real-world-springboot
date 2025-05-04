@@ -9,5 +9,5 @@ public class Author {
     private String userName;
     private String bio;
     private String image;
-    private boolean following; //TODO : 구현필요
+    private boolean following;
 }

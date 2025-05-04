@@ -4,6 +4,7 @@ import lombok.Builder;
 
 @Builder
 public record ArticleConditionDto(
+        String viewerName,
         String tagName,
         String authorName,
         String favoritedUserName,

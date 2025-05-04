@@ -75,7 +75,7 @@ public class ArticleController {
     @DeleteMapping("{slug}/comments/{id}")
     public void deleteComments(@RequestHeader("Authorization") String authorizationHeader, @PathVariable String slug, @PathVariable Long id) throws BadRequestException {
         var authorName = authService.getUserNameFromToken(authorizationHeader);
-        articleService.deleteComments(new CommentDeleteDto(authorName, id, slug));
+        articleService.deleteComments(new CommentDeleteDto(authorName, id, slug, authorName));
     }
 
     @PostMapping("{slug}/favorite")

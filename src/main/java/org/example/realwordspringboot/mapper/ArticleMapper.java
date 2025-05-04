@@ -17,18 +17,19 @@ public class ArticleMapper {
                 .userName(user.getUserName())
                 .bio(user.getBio())
                 .image(user.getImage())
+                .following(false)
                 .build();
 
         return Article.from(articleCreateDto, author);
     }
 
-    public static Set<Article> toSet(List<ArticleEntity> entities) {
+    public static Set<Article> toSet(List<ArticleEntity> entities, String viewerName) {
         return entities.stream()
-                .map(ArticleMapper::fromEntity)
+                .map(entity -> fromEntity(entity, viewerName))
                 .collect(Collectors.toSet());
     }
 
-    public static Article fromEntity(ArticleEntity entity) {
+    public static Article fromEntity(ArticleEntity entity, String viewerName) {
         return Article.builder()
                 .slug(entity.getSlug())
                 .title(entity.getTitle())
@@ -38,7 +39,7 @@ public class ArticleMapper {
                 .comments(toComments(entity.getComments()))
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())
-                .author(toUser(entity.getAuthor()))
+                .author(toUser(entity.getAuthor(), viewerName))
                 .favoriters(toFavoriter(entity.getFavorites()))
                 .build();
     }
@@ -49,12 +50,15 @@ public class ArticleMapper {
                 .toList();
     }
 
-    private static Author toUser(UserEntity user) {
+    private static Author toUser(UserEntity user, String viewerName) {
+        var following = user.getFollowers().stream()
+                .anyMatch(follower -> follower.getFollowerUser().getUserName().equals(viewerName));
+
         return Author.builder()
                 .userName(user.getUserName())
                 .bio(user.getBio())
                 .image(user.getImage())
-                .following(false)
+                .following(following)
                 .build();
     }
 
