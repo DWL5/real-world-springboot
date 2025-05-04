@@ -2,6 +2,7 @@ package org.example.realwordspringboot.service.article;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
+import org.example.realwordspringboot.controller.dto.reqeust.ArticleRequest;
 import org.example.realwordspringboot.domain.article.Article;
 import org.example.realwordspringboot.domain.article.Comment;
 import org.example.realwordspringboot.domain.dto.*;
@@ -12,6 +13,7 @@ import org.example.realwordspringboot.repository.dto.CommentDeleteCommand;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +29,11 @@ public class ArticleServiceImpl implements ArticleService {
     private final FavoriteQueryService favoriteQueryService;
     private final FavoriteCommandService favoriteCommandService;
 
+
+    @Override
+    public Set<Article> getArticles(ArticleConditionDto conditions) {
+        return articleQueryService.getByConditions(conditions);
+    }
 
     @Override
     public Article create(ArticleCreateDto articleCreateDto) throws BadRequestException {

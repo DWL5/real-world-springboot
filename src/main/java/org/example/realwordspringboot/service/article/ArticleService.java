@@ -6,8 +6,10 @@ import org.example.realwordspringboot.domain.article.Comment;
 import org.example.realwordspringboot.domain.dto.*;
 
 import java.util.List;
+import java.util.Set;
 
 public interface ArticleService {
+    Set<Article> getArticles(ArticleConditionDto conditions);
     Article create(ArticleCreateDto articleCreateDto) throws BadRequestException;
     Article update(ArticleUpdateDto articleUpdateDto) throws BadRequestException;
     void delete(ArticleDeleteDto articleDeleteDto) throws BadRequestException;

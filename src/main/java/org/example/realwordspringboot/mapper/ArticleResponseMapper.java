@@ -1,10 +1,32 @@
 package org.example.realwordspringboot.mapper;
 
+import org.example.realwordspringboot.controller.dto.response.ArticleMultipleResponse;
 import org.example.realwordspringboot.controller.dto.response.ArticleSingleResponse;
 import org.example.realwordspringboot.domain.article.Article;
 
+import java.util.Set;
+
 public class ArticleResponseMapper {
-    public static ArticleSingleResponse from(Article article, String viewer) {
+    public static ArticleMultipleResponse toMultipleResponse(Set<Article> article, String viewer) {
+        var articleResponses = article.stream()
+                .map(it -> toArticleResponse(it, viewer))
+                .toList();
+
+        return ArticleMultipleResponse.builder()
+                .articleCount(articleResponses.size())
+                .articles(articleResponses)
+                .build();
+    }
+
+    public static ArticleSingleResponse toSingleResponse(Article article, String viewer) {
+        var articleResponse = toArticleResponse(article, viewer);
+
+        return ArticleSingleResponse.builder()
+                .article(articleResponse)
+                .build();
+    }
+
+    private static ArticleSingleResponse.ArticleResponse toArticleResponse(Article article, String viewer) {
         var author = article.getAuthor();
         var authorResponse = ArticleSingleResponse.AuthorResponse.builder()
                 .userName(author.getUserName())
@@ -14,7 +36,7 @@ public class ArticleResponseMapper {
                 .build();
 
         var favorited = article.getFavoriters().contains(viewer);
-        var articleResponse = ArticleSingleResponse.ArticleResponse.builder()
+        return ArticleSingleResponse.ArticleResponse.builder()
                 .slug(article.getSlug())
                 .title(article.getTitle())
                 .description(article.getDescription())
@@ -25,10 +47,6 @@ public class ArticleResponseMapper {
                 .favoritesCount(article.getFavoriters().size())
                 .favorited(favorited)
                 .author(authorResponse)
-                .build();
-
-        return ArticleSingleResponse.builder()
-                .article(articleResponse)
                 .build();
     }
 }

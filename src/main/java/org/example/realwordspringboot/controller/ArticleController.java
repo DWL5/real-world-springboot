@@ -4,8 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
 import org.example.realwordspringboot.auth.service.AuthService;
 import org.example.realwordspringboot.controller.dto.reqeust.ArticleCreateRequest;
+import org.example.realwordspringboot.controller.dto.reqeust.ArticleRequest;
 import org.example.realwordspringboot.controller.dto.reqeust.ArticleUpdateRequest;
 import org.example.realwordspringboot.controller.dto.reqeust.CommentCreateRequest;
+import org.example.realwordspringboot.controller.dto.response.ArticleMultipleResponse;
 import org.example.realwordspringboot.controller.dto.response.ArticleSingleResponse;
 import org.example.realwordspringboot.controller.dto.response.CommentMultipleResponse;
 import org.example.realwordspringboot.controller.dto.response.CommentSingleResponse;
@@ -14,6 +16,7 @@ import org.example.realwordspringboot.domain.dto.CommentCreateDto;
 import org.example.realwordspringboot.domain.dto.CommentDeleteDto;
 import org.example.realwordspringboot.mapper.*;
 import org.example.realwordspringboot.service.article.ArticleService;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,12 +26,22 @@ public class ArticleController {
     private final ArticleService articleService;
     private final AuthService authService;
 
-    @PostMapping()
+    @PostMapping
     public ArticleSingleResponse create(@RequestHeader("Authorization") String authorizationHeader,
                                         @RequestBody ArticleCreateRequest request) throws BadRequestException {
         var authorName = authService.getUserNameFromToken(authorizationHeader);
         var article = articleService.create(ArticleCreateDtoMapper.of(request, authorName));
-        return ArticleResponseMapper.from(article, authorName);
+        return ArticleResponseMapper.toSingleResponse(article, authorName);
+    }
+
+    @GetMapping
+    public ArticleMultipleResponse getArticles(@RequestHeader("Authorization") String authorizationHeader,
+                                               ArticleRequest articleRequest,
+                                               Pageable pageable) {
+        var viewer = authService.getUserNameFromTokenOptional(authorizationHeader);
+        var condition = ArticleConditionDtoMapper.of(articleRequest, pageable);
+        var articles = articleService.getArticles(condition);
+        return ArticleResponseMapper.toMultipleResponse(articles, viewer);
     }
 
     @PutMapping("/{slug}")
@@ -36,7 +49,7 @@ public class ArticleController {
                                         @RequestBody ArticleUpdateRequest request, @PathVariable String slug) throws BadRequestException {
         var authorName = authService.getUserNameFromToken(authorizationHeader);
         var article = articleService.update(ArticleUpdateDtoMapper.of(request, authorName, slug));
-        return ArticleResponseMapper.from(article, authorName);
+        return ArticleResponseMapper.toSingleResponse(article, authorName);
     }
 
     @DeleteMapping("/{slug}")
@@ -69,13 +82,13 @@ public class ArticleController {
     public ArticleSingleResponse favoriteArticle(@RequestHeader("Authorization") String authorizationHeader, @PathVariable String slug) throws BadRequestException {
         var userName = authService.getUserNameFromToken(authorizationHeader);
         var article = articleService.favoriteArticle(userName, slug);
-        return ArticleResponseMapper.from(article, userName);
+        return ArticleResponseMapper.toSingleResponse(article, userName);
     }
 
     @DeleteMapping("{slug}/favorite")
     public ArticleSingleResponse unFavoriteArticle(@RequestHeader("Authorization") String authorizationHeader, @PathVariable String slug) throws BadRequestException {
         var userName = authService.getUserNameFromToken(authorizationHeader);
         var article = articleService.unFavoriteArticle(userName, slug);
-        return ArticleResponseMapper.from(article, userName);
+        return ArticleResponseMapper.toSingleResponse(article, userName);
     }
 }
