@@ -36,6 +36,11 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
+    public Set<Article> feeds(String viewerName, long offset, long limit) {
+        return articleQueryService.feed(viewerName, offset, limit);
+    }
+
+    @Override
     public Article create(ArticleCreateDto articleCreateDto) throws BadRequestException {
         var authorEntity = userRepository.findByUserName(articleCreateDto.authorName())
                 .orElseThrow(() -> new BadRequestException(""));

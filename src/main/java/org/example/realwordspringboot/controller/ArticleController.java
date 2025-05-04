@@ -44,6 +44,14 @@ public class ArticleController {
         return ArticleResponseMapper.toMultipleResponse(articles, viewer);
     }
 
+    @GetMapping("/feed")
+    public ArticleMultipleResponse feeds(@RequestHeader("Authorization") String authorizationHeader,
+                                               Pageable pageable) {
+        var viewer = authService.getUserNameFromTokenOptional(authorizationHeader);
+        var articles = articleService.feeds(viewer, pageable.getOffset(), pageable.getPageSize());
+        return ArticleResponseMapper.toMultipleResponse(articles, viewer);
+    }
+
     @PutMapping("/{slug}")
     public ArticleSingleResponse update(@RequestHeader("Authorization") String authorizationHeader,
                                         @RequestBody ArticleUpdateRequest request, @PathVariable String slug) throws BadRequestException {

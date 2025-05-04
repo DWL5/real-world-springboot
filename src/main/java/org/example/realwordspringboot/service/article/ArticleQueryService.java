@@ -28,6 +28,11 @@ public class ArticleQueryService {
         return ArticleMapper.toSet(entities, condition.viewerName());
     }
 
+    public Set<Article> feed(String viewerName, long offset, long limit) {
+        var entities = articleRepositoryImpl.feed(viewerName, offset, limit);
+        return ArticleMapper.toSet(entities, viewerName);
+    }
+
     public Article getArticleBySlug(String slug, String viewerName) {
         var articleEntity = articleRepository.findBySlug(slug);
         return ArticleMapper.fromEntity(articleEntity, viewerName);

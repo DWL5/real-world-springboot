@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface ArticleRepositoryCustom {
     List<ArticleEntity> search(ArticleConditionDto articleConditionDto);
+    List<ArticleEntity> feed(String userName, long offset, long limit);
 }

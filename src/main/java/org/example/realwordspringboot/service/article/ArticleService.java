@@ -10,6 +10,7 @@ import java.util.Set;
 
 public interface ArticleService {
     Set<Article> getArticles(ArticleConditionDto conditions);
+    Set<Article> feeds(String viewerName, long offset, long limit);
     Article create(ArticleCreateDto articleCreateDto) throws BadRequestException;
     Article update(ArticleUpdateDto articleUpdateDto) throws BadRequestException;
     void delete(ArticleDeleteDto articleDeleteDto) throws BadRequestException;
