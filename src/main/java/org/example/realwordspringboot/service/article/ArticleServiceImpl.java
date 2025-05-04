@@ -99,4 +99,18 @@ public class ArticleServiceImpl implements ArticleService {
 
         throw new BadRequestException("");
     }
+
+    @Override
+    public Article unFavoriteArticle(String userName, String slug) throws BadRequestException {
+        var favorites = favoriteQueryService.getFavorite(userName);
+        var article = articleQueryService.getArticleBySlug(slug);
+
+        var removed = favorites.removeArticle(article);
+        if (removed) {
+            article.unFavorite(favorites.getUser().getUserName());
+            favoriteCommandService.delete(userName, slug);
+        }
+
+        throw new BadRequestException("");
+    }
 }

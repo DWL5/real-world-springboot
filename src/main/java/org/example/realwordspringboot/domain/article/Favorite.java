@@ -20,4 +20,13 @@ public class Favorite {
         articles.add(article);
         return true;
     }
+
+    public boolean removeArticle(Article article) {
+        if (articles.contains(article)) {
+            return false;
+        }
+
+        articles.remove(article);
+        return true;
+    }
 }

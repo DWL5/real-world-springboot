@@ -61,6 +61,10 @@ public class Article {
         favoriters.add(name);
     }
 
+    public void unFavorite(String name) {
+        favoriters.remove(name);
+    }
+
     private static String toSlug(String input) {
         return input.trim()
                 .toLowerCase()

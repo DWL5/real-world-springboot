@@ -29,4 +29,18 @@ public class FavoriteCommandService {
 
         favoriteRepository.save(favoriteEntity);
     }
+
+    public void delete(String userName, String slug) throws BadRequestException {
+
+        var userEntity = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new BadRequestException(""));
+        var articleEntity = articleRepository.findBySlug(slug);
+
+        var favoriteEntity = FavoriteEntity.builder()
+                .user(userEntity)
+                .article(articleEntity)
+                .build();
+
+        favoriteRepository.delete(favoriteEntity);
+    }
 }

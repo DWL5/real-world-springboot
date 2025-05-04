@@ -33,7 +33,7 @@ public class ArticleController {
 
     @PutMapping("/{slug}")
     public ArticleSingleResponse update(@RequestHeader("Authorization") String authorizationHeader,
-                                  @RequestBody ArticleUpdateRequest request, @PathVariable String slug) throws BadRequestException {
+                                        @RequestBody ArticleUpdateRequest request, @PathVariable String slug) throws BadRequestException {
         var authorName = authService.getUserNameFromToken(authorizationHeader);
         var article = articleService.update(ArticleUpdateDtoMapper.of(request, authorName, slug));
         return ArticleResponseMapper.from(article, authorName);
@@ -47,7 +47,7 @@ public class ArticleController {
 
     @PostMapping("/{slug}/comments")
     public CommentSingleResponse comment(@RequestHeader("Authorization") String authorizationHeader,
-                                                         @RequestBody CommentCreateRequest request, @PathVariable String slug) throws BadRequestException {
+                                         @RequestBody CommentCreateRequest request, @PathVariable String slug) throws BadRequestException {
         var authorName = authService.getUserNameFromToken(authorizationHeader);
         var comment = articleService.createComment(new CommentCreateDto(request.comment().body(), authorName, slug));
         return CommentResponseMapper.from(comment);
@@ -69,6 +69,13 @@ public class ArticleController {
     public ArticleSingleResponse favoriteArticle(@RequestHeader("Authorization") String authorizationHeader, @PathVariable String slug) throws BadRequestException {
         var userName = authService.getUserNameFromToken(authorizationHeader);
         var article = articleService.favoriteArticle(userName, slug);
+        return ArticleResponseMapper.from(article, userName);
+    }
+
+    @DeleteMapping("{slug}/favorite")
+    public ArticleSingleResponse unFavoriteArticle(@RequestHeader("Authorization") String authorizationHeader, @PathVariable String slug) throws BadRequestException {
+        var userName = authService.getUserNameFromToken(authorizationHeader);
+        var article = articleService.unFavoriteArticle(userName, slug);
         return ArticleResponseMapper.from(article, userName);
     }
 }

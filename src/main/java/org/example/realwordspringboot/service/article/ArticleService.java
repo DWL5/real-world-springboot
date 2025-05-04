@@ -14,5 +14,6 @@ public interface ArticleService {
     Comment createComment(CommentCreateDto commentCreateDto) throws BadRequestException;
     List<Comment> getComments(String slug) throws BadRequestException;
     void deleteComments(CommentDeleteDto commentDeleteDto) throws BadRequestException;
-    Article favoriteArticle(String  authorName, String slug) throws BadRequestException;
+    Article favoriteArticle(String  userName, String slug) throws BadRequestException;
+    Article unFavoriteArticle(String  userName, String slug) throws BadRequestException;
 }
